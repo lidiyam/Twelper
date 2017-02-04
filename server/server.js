@@ -1,19 +1,19 @@
-var express = require('express')
-var app = express()
-var bodyParser = require('body-parser')
-var yelpCreds = require('./yelpSecret');
-var yelp = require('yelp-fusion');
-var uberCreds = require('./uberSecret');
-var Uber = require('node-uber');
-var Promise = require('promise');
+const express = require('express')
+const app = express()
+const bodyParser = require('body-parser')
+const yelpCreds = require('./yelpSecret');
+const yelp = require('yelp-fusion');
+const uberCreds = require('./uberSecret');
+const Uber = require('node-uber');
+const Promise = require('promise');
 
-var clientId = yelpCreds.clientId;
-var clientSecret = yelpCreds.clientSecret;
+const clientId = yelpCreds.clientId;
+const clientSecret = yelpCreds.clientSecret;
 
 app.use(bodyParser())
 
 app.get('/destinations/:city/:num',function(req,res) {
-	var searchRequest = {
+	let searchRequest = {
 		//why is this filter not working?????
 		category_filter: 'tours',
 		location: req.params.city,
@@ -21,12 +21,12 @@ app.get('/destinations/:city/:num',function(req,res) {
 	};
 
 	yelp.accessToken(clientId, clientSecret).then(response => {
-	  var client = yelp.client(response.jsonBody.access_token);
+	  let client = yelp.client(response.jsonBody.access_token);
 
 	  client.search(searchRequest)
 	  .then(response => {
-	    var Result = response.jsonBody.businesses;
-	    var prettyJson = JSON.stringify(Result, null, 4);
+	    let Result = response.jsonBody.businesses;
+	    let prettyJson = JSON.stringify(Result, null, 4);
 	    res.send(prettyJson);
 	  });
 		}).catch(e => {
@@ -35,7 +35,7 @@ app.get('/destinations/:city/:num',function(req,res) {
 
 });
 
-var uber = new Uber({
+let uber = new Uber({
   client_id: uberCreds.clientIdUber,
   client_secret: uberCreds.clientSecretUber,
   server_token: uberCreds.serverToken,
@@ -63,24 +63,25 @@ app.get('/api/routeInfo/:start_latitude/:start_longitude/:end_latitude/:end_long
 
 
 app.get('/api/findPath/:latitude/:longitude/:city/:num', function (req, res) {
-	var start_lat = req.params.latitude
-	var start_long = req.params.longitude
-	var city = req.params.city
-	var num = req.params.num
+	let start_lat = req.params.latitude
+	let start_long = req.params.longitude
+	let city = req.params.city
+	let num = req.params.num
 
 	getTopDestinations(city, num).then(async (destinations) => {
-		var count = destinations.length
+		let count = destinations.length
 
 		console.log('destinations')
 		console.log(destinations)
 		console.log(count)
 
-		var topPath = new Array()
+		let topPath = new Array()
 
 		try {
-			for (var i = 0; i < count; ++i) {
+			for (let i = 0; i < count; ++i) {
 				console.log("NEXT")
-				var nextStop = await findNextStop(start_lat, start_long, destinations);
+				let nextStop = await findNextStop(start_lat, start_long, destinations);
+				console.log("NEXTCLOSED")
 				console.log(nextStop)
 				topPath.push(nextStop)
 				console.log(topPath)
@@ -91,6 +92,7 @@ app.get('/api/findPath/:latitude/:longitude/:city/:num', function (req, res) {
 				start_long = nextStop['longitude']
 			}
 		} catch (e) {
+			console.log("ERROR")
 			console.log(e);
 		}
 
@@ -102,14 +104,18 @@ app.get('/api/findPath/:latitude/:longitude/:city/:num', function (req, res) {
 })
 
 
-async function findNextStop(start_lat, start_long, destinations) {
-	// return new Promise((resolve, reject) => {
-		var nextDest, bestScore = null;
-		var count = destinations.length
+function findNextStop(start_lat, start_long, destinations) {
+	return new Promise((resolve, reject) => {
+		let nextDest, bestScore = null;
+		let calculated = 0;
 
-		for (var i = 0; i < count; i++) {
+		let count = destinations.length
+		console.log('len')
+		console.log(count)
+
+		for (let i = 0; i < count; i++) {
 			console.log(destinations[i])
-			uber.estimates.getPriceForRoute(start_lat, start_long, destinations[i].latitude, destinations[i].longitude, function (err, resp) {
+			uber.estimates.getPriceForRoute(start_lat, start_long, destinations[i].latitude, destinations[i].longitude, (err, resp) => {
 				if (err) {
 					console.error(err)
 					// reject(err);
@@ -121,11 +127,11 @@ async function findNextStop(start_lat, start_long, destinations) {
 					// console.log("Resp")
 					// console.log(resp)
 
-					var distance = resp['prices'][0]['distance']
-					var costEstimate = resp['prices'][0]['high_estimate']
-		  			var duration = resp['prices'][0]['duration']
-		  			var rating = resp['prices'][0]['rating']
-		  			var isClosed = resp['prices'][0]['is_closed']
+					let distance = resp['prices'][0]['distance']
+					let costEstimate = resp['prices'][0]['high_estimate']
+		  			let duration = resp['prices'][0]['duration']
+		  			// let rating = resp['prices'][0]['rating']
+		  			// let isClosed = resp['prices'][0]['is_closed']
 
 		  			// console.log("data")
 		  			// console.log(resp['prices'][0])
@@ -135,25 +141,31 @@ async function findNextStop(start_lat, start_long, destinations) {
 		  			// console.log(rating)
 		  			// console.log(isClosed)
 
-		  			var score = (3*distance + 2*costEstimate + duration)
+		  			let score = (3*distance + 2*costEstimate + duration)
 
+		  			calculated += 1;
 		  			if (!nextDest) {
 		  				console.log("LOG")
-		  				console.log(destinations)
+		  				console.log(destinations[i])
 		  				nextDest = destinations[i]
 		  				bestScore = score
 		  			}
 		  			else if (score < bestScore) {
+		  				console.log("LOG2")
 		  				nextDest = destinations[i]
 		  				bestScore = score
 		  			}
 
-		  			// resolve(nextDest);
+		  			if (calculated == count) {
+		  				resolve(nextDest);
+		  			}
 				}
 			})
 		}
-	// })
-	return nextDest;
+	})
+	// console.log("ND")
+	// console.log(nextDest)
+	// return nextDest;
 }
 
 
@@ -161,9 +173,9 @@ async function findNextStop(start_lat, start_long, destinations) {
 // find top destinations (yelp): returns an array of Objects with keys: latitude, longitude, city
 function getTopDestinations(city, num) {
 	return new Promise((resolve, reject) => {
-		var destinations = new Array()
+		let destinations = new Array()
 
-		var searchRequest = {
+		let searchRequest = {
 			//why is this filter not working?????
 			category_filter: 'tours',
 			location: city,
@@ -171,21 +183,21 @@ function getTopDestinations(city, num) {
 		};
 
 		yelp.accessToken(clientId, clientSecret).then(response => {
-		  var client = yelp.client(response.jsonBody.access_token);
+		  let client = yelp.client(response.jsonBody.access_token);
 
 		  client.search(searchRequest)
 		  .then(response => {
-		    var Result = response.jsonBody.businesses;
-		    //var prettyJson = JSON.stringify(Result, null, 4);
+		    let Result = response.jsonBody.businesses;
+		    //let prettyJson = JSON.stringify(Result, null, 4);
 		    console.log(Result.length)
-		    var destinations = new Array()
+		    let destinations = new Array()
 		    console.log(Result)
 		    //console.log(prettyJson);
 		    for (obj in Result) {
 		    	// console.log(obj)
 		    	// console.log("TEST")
-		    	var latitude = Result[obj]['coordinates']['latitude']
-		    	var longitude = Result[obj]['coordinates']['longitude']
+		    	let latitude = Result[obj]['coordinates']['latitude']
+		    	let longitude = Result[obj]['coordinates']['longitude']
 		    	destinations.push({'latitude': latitude, 'longitude': longitude})
 		    }
 
@@ -200,7 +212,7 @@ function getTopDestinations(city, num) {
 
 
 function removeObj(nextStop, destinations) {
-	for (var i = 0; i < destinations.count; ++i) {
+	for (let i = 0; i < destinations.count; ++i) {
 		if (destinations[i] == nextStop) {
 			destinations.splice(i, 1);
 		}
