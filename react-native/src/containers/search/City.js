@@ -54,6 +54,7 @@ class City extends React.Component {
           <Text style={styles.title}>{'CITY'}</Text>
           <View style={styles.inputContainer}>
             <TextInput
+                autoCorrect={false}
                 returnKeyType={'go'}
                 selectTextOnFocus={true}
                 style={styles.input}

@@ -24,10 +24,12 @@ import {
 // Redux imports
 import {connect} from 'react-redux';
 import {
+  searchCity,
   setRootView,
 } from 'actions';
 
 // Imports
+import ActionButton from 'react-native-action-button';
 import Chip from 'Chip';
 import Destination from 'Destination';
 import LinearGradient from 'react-native-linear-gradient';
@@ -56,11 +58,22 @@ class Results extends React.Component {
     }
   }
 
+  _onNewSearch() {
+    this.props.startNewSearch();
+  }
+
+  _onFilterList() {
+
+  }
+
   _renderHeader() {
     return (
-      <LinearGradient
-          colors={[Constants.Colors.primary, Constants.Colors.primaryTransparent]}
-          style={styles.headerShadow} />
+      <View>
+        <View style={{backgroundColor: Constants.Colors.primary, marginTop: -240, height: 240}} />
+        <LinearGradient
+            colors={[Constants.Colors.primary, Constants.Colors.primaryTransparent]}
+            style={styles.headerShadow} />
+      </View>
     );
   }
 
@@ -93,12 +106,6 @@ class Results extends React.Component {
     }
   }
 
-  // _renderSeparator() {
-  //   return (
-  //     <View style={styles.separator} />
-  //   )
-  // }
-
   render(): ReactElement < any > {
     return (
       <View style={styles.container}>
@@ -120,9 +127,35 @@ class Results extends React.Component {
         </View>
         <ListView
             dataSource={this.state.dataSource}
-            bounces={false}
             renderHeader={this._renderHeader}
             renderRow={this._renderRow.bind(this)} />
+        <ActionButton
+            buttonColor={Constants.Colors.secondary}
+            icon={
+              <MaterialIcons
+                  name={'search'}
+                  color={Constants.Colors.secondaryDarkText}
+                  size={Constants.Sizes.Text.Title} />
+            }>
+          <ActionButton.Item
+              buttonColor={Constants.Colors.primary}
+              title={'New search'}
+              onPress={this._onNewSearch.bind(this)}>
+            <MaterialIcons
+                name={'replay'}
+                color={Constants.Colors.primaryLightText}
+                size={Constants.Sizes.Text.Title} />
+          </ActionButton.Item>
+          <ActionButton.Item
+              buttonColor={Constants.Colors.tertiary}
+              title={'Filter'}
+              onPress={this._onFilterList.bind(this)}>
+            <MaterialIcons
+                name={'filter-list'}
+                color={Constants.Colors.primaryLightText}
+                size={Constants.Sizes.Text.Title} />
+          </ActionButton.Item>
+        </ActionButton>
       </View>
     );
   }
@@ -174,7 +207,6 @@ const styles = StyleSheet.create({
     height: 50,
     backgroundColor: Constants.Colors.primaryLightText,
   },
-
   uberSeparator: {
     zIndex: -1,
     position: 'absolute',
@@ -183,7 +215,7 @@ const styles = StyleSheet.create({
     width: Constants.Sizes.Margins.Condensed,
     height: 40,
     backgroundColor: Constants.Colors.primaryLightText,
-  }
+  },
 });
 
 // Map state to props
@@ -198,7 +230,10 @@ const select = (store) => {
 // Map dispatch to props
 const actions = (dispatch) => {
   return {
-    startNewSearch: () => dispatch(setRootView('city')),
+    startNewSearch: () => {
+      dispatch(setRootView('city'));
+      dispatch(searchCity(''));
+    },
   };
 };
 
