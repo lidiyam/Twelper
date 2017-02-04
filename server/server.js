@@ -5,6 +5,7 @@ var yelpCreds = require('./yelpSecret');
 var yelp = require('yelp-fusion');
 var uberCreds = require('./uberSecret');
 var Uber = require('node-uber');
+var Promise = require('promise');
 
 var clientId = yelpCreds.clientId;
 var clientSecret = yelpCreds.clientSecret;
@@ -67,20 +68,24 @@ app.get('/api/findPath/:latitude/:longitude/:city/:num', function (req, res) {
 	var city = req.params.city
 	var num = req.params.num
 
-	var destinations = getTopDestinations(city, num)
-	var count = destinations.count
+	getTopDestinations(city, num).then((destinations) => {
+		var count = destinations.count
 
-	var topPath = new Array()
+		console.log('destinations')
+		console.log(destinations)
 
-	for (var i = 0; i < count; ++i) {
-		var nextStop = findNextStop(start_lat, start_long, destinations)
-		topPath.push(nextStop)
-		destinations = removeObj(nextStop, destinations)
-		start_lat = nextStop['latitude']
-		start_long = nextStop['longitude']
-	}
+		var topPath = new Array()
 
-	res.send( topPath )
+		for (var i = 0; i < count; ++i) {
+			var nextStop = findNextStop(start_lat, start_long, destinations)
+			topPath.push(nextStop)
+			destinations = removeObj(nextStop, destinations)
+			start_lat = nextStop['latitude']
+			start_long = nextStop['longitude']
+		}
+
+		res.send( topPath )
+	});
 })
 
 
@@ -115,40 +120,43 @@ function findNextStop(start_lat, start_long, destinations) {
 
 // find top destinations (yelp): returns an array of Objects with keys: latitude, longitude, city
 function getTopDestinations(city, num) {
-	var destinations = new Array()
+	return new Promise((resolve, reject) => {
+		var destinations = new Array()
 
-	var searchRequest = {
-		//why is this filter not working?????
-		category_filter: 'tours',
-		location: city,
-		limit: num
-	};
+		var searchRequest = {
+			//why is this filter not working?????
+			category_filter: 'tours',
+			location: city,
+			limit: num
+		};
 
-	yelp.accessToken(clientId, clientSecret).then(response => {
-	  var client = yelp.client(response.jsonBody.access_token);
+		yelp.accessToken(clientId, clientSecret).then(response => {
+		  var client = yelp.client(response.jsonBody.access_token);
 
-	  client.search(searchRequest)
-	  .then(response => {
-	    var Result = response.jsonBody.businesses;
-	    var prettyJson = JSON.stringify(Result, null, 4);
-
-	    // todo: conver this into array of objects
-	    var destinations = new Array()
-	    console.log(prettyJson);
-	    for (obj in prettyJson) {
-	    	var latitude = prettyJson['coordinates']['latitude']
-	    	var longitude = prettyJson['coordinates']['longitude']
-	    	var city = prettyJson['city']
-	    	destinations.push({'latitude': latitude, 'longitude': longitude, 'city': city})
-	    }
-	    
-	    return destinations;
-	  });
-		}).catch(e => {
-			console.log(e);
-		});
-
-	return destinations;
+		  client.search(searchRequest)
+		  .then(response => {
+		    var Result = response.jsonBody.businesses;
+		    //var prettyJson = JSON.stringify(Result, null, 4);
+		    console.log(Result.length)
+		    // todo: conver this into array of objects
+		    var destinations = new Array()
+		    console.log(Result)
+		    //console.log(prettyJson);
+		    for (obj in Result) {
+		    	console.log(obj)
+		    	console.log("TEST")
+		    	var latitude = Result[obj]['coordinates']['latitude']
+		    	var longitude = Result[obj]['coordinates']['longitude']
+		    	destinations.push({'latitude': latitude, 'longitude': longitude, 'city': city})
+		    }
+		    
+		    resolve(destinations);
+		  });
+			}).catch(e => {
+				console.log(e);
+				reject(e);
+			});
+	});
 }
 
 
