@@ -1,53 +1,20 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
+ *
+ * @license Copyright (C) 2017 Twelper
+ * @created 2017-02-04
+ * @file index.ios.js
+ * @description Entry point for the Twelper iOS app
+ *
  * @flow
  */
+'use strict';
 
-import React, { Component } from 'react';
+// React imports
 import {
   AppRegistry,
-  StyleSheet,
-  Text,
-  View
 } from 'react-native';
 
-export default class Twelper extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
-      </View>
-    );
-  }
-}
+// Imports
+import setup from './src/setup';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
-
-AppRegistry.registerComponent('Twelper', () => Twelper);
+AppRegistry.registerComponent('Twelper', setup);
