@@ -52,8 +52,8 @@ app.get('/', function (req, res) {
 })
 
 
-app.get('/api/routeInfo', function (req, res) {
-	uber.estimates.getPriceForRoute(req.query.start_latitude, res.query.start_longitude, res.query.end_latitude, res.query.end_longitude, function (err, resp) {
+app.get('/api/routeInfo/:start_latitude/:start_longitude/:end_latitude/:end_longitude', function (req, res) {
+	uber.estimates.getPriceForRoute(req.params.start_latitude, req.params.start_longitude, req.params.end_latitude, req.params.end_longitude, function (err, resp) {
 	  if (err) console.error(err);
 	  else {
 	  	res.send(resp['prices'][0]);
@@ -149,7 +149,7 @@ function getTopDestinations(city, num) {
 		    	var longitude = Result[obj]['coordinates']['longitude']
 		    	destinations.push({'latitude': latitude, 'longitude': longitude, 'city': city})
 		    }
-		    
+
 		    resolve(destinations);
 		  });
 			}).catch(e => {
