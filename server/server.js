@@ -9,24 +9,27 @@ var clientSecret = yelpCreds.clientSecret;
 
 app.use(bodyParser())
 
-//test example
-var searchRequest = {
-	//why is this filter not working?????
-	category_filter: 'tours',
-	location: 'san francisco, ca',
-	limit:10
-};
+app.get('/destinations/:city/:num',function(req,res) {
+	var searchRequest = {
+		//why is this filter not working?????
+		category_filter: 'tours',
+		location: req.params.city,
+		limit: req.params.num
+	};
 
-yelp.accessToken(clientId, clientSecret).then(response => {
-  var client = yelp.client(response.jsonBody.access_token);
+	yelp.accessToken(clientId, clientSecret).then(response => {
+	  var client = yelp.client(response.jsonBody.access_token);
 
-  client.search(searchRequest).then(response => {
-    var Result = response.jsonBody.businesses;
-    var prettyJson = JSON.stringify(Result, null, 4);
-    console.log(prettyJson);
-  });
-}).catch(e => {
-  console.log(e);
+	  client.search(searchRequest)
+	  .then(response => {
+	    var Result = response.jsonBody.businesses;
+	    var prettyJson = JSON.stringify(Result, null, 4);
+	    console.log(prettyJson);
+	  });
+		}).catch(e => {
+		  console.log(e);
+		});
+
 });
 
 app.get('/', function (req, res) {
