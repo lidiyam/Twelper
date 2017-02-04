@@ -12,8 +12,6 @@
 // React imports
 import React from 'react';
 import {
-  Dimensions,
-  Image,
   StyleSheet,
   Text,
   TextInput,
@@ -24,13 +22,12 @@ import {
 import {connect} from 'react-redux';
 import {
   searchCity,
+  setRootView,
 } from 'actions';
 
 // Imports
 import NextButton from 'NextButton';
 import * as Constants from 'Constants';
-
-const {width, height} = Dimensions.get('window');
 
 class City extends React.Component {
 
@@ -49,24 +46,19 @@ class City extends React.Component {
 
   render(): ReactElement < any > {
     return (
-      <View style={styles.container}>
-        <Image
-            source={{uri: 'https://source.unsplash.com/category/buildings/'}}
-            style={styles.backgroundImage} />
-        <View style={[styles.container, styles.overlay]}>
-          <View style={styles.menu}>
-            <Text style={styles.subtitle}>{'Find your'}</Text>
-            <Text style={styles.title}>{'CITY'}</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                  returnKeyType={'go'}
-                  selectTextOnFocus={true}
-                  style={styles.input}
-                  value={this.props.city}
-                  onChangeText={(value) => this.props.updateCity(value)}
-                  onSubmitEditing={this._onNext} />
-              <NextButton onClick={this._onNext} />
-            </View>
+      <View style={[styles.container]}>
+        <View style={styles.menu}>
+          <Text style={styles.subtitle}>{'find your'}</Text>
+          <Text style={styles.title}>{'CITY'}</Text>
+          <View style={styles.inputContainer}>
+            <TextInput
+                returnKeyType={'go'}
+                selectTextOnFocus={true}
+                style={styles.input}
+                value={this.props.city}
+                onChangeText={(value) => this.props.updateCity(value)}
+                onSubmitEditing={this._onNext} />
+            <NextButton onClick={this._onNext} />
           </View>
         </View>
       </View>
@@ -77,19 +69,6 @@ class City extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Constants.Colors.primary,
-  },
-  backgroundImage: {
-    resizeMode: 'cover',
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width,
-    height,
-  },
-  overlay: {
     backgroundColor: Constants.Colors.overlay,
     justifyContent: 'center',
   },
@@ -133,7 +112,10 @@ const select = (store) => {
 const actions = (dispatch) => {
   return {
     updateCity: (city: string) => dispatch(searchCity(city)),
-    selectCity: (city: string) => dispatch(searchCity(city)),
+    selectCity: (city: string) => {
+      dispatch(searchCity(city));
+      dispatch(setRootView('attractions'));
+    },
   };
 };
 

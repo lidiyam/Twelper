@@ -14,7 +14,7 @@ const initialState = {
   numberOfAttractions: 3,
 };
 
-export default function uber(state = initialState, action) {
+export default function search(state = initialState, action) {
   switch(action.type) {
     case 'SEARCH_CITY':
       return {

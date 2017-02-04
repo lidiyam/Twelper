@@ -10,11 +10,13 @@
  */
 'use strict';
 
+import * as navigationActions from './navigationActions';
 import * as searchActions from './searchActions';
 import * as uberActions from './uberActions';
 import * as yelpActions from './yelpActions';
 
 module.exports = {
+  ...navigationActions,
   ...searchActions,
   ...uberActions,
   ...yelpActions,

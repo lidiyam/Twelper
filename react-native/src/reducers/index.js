@@ -14,12 +14,14 @@
 const {combineReducers} = require('redux');
 
 // Reducer imports
+import navigationReducer from './navigationReducer';
 import searchReducer from './searchReducer';
 import uberReducer from './uberReducer';
 import yelpReducer from './yelpReducer';
 
 // Combine and export reducers
 module.exports = combineReducers({
+  navigation: navigationReducer,
   search: searchReducer,
   uber: uberReducer,
   yelp: yelpReducer,
