@@ -212,7 +212,7 @@ function getTopDestinations(city, num) {
 
 
 function removeObj(nextStop, destinations) {
-	for (let i = 0; i < destinations.count; ++i) {
+	for (let i = 0; i < destinations.length; ++i) {
 		if (destinations[i] == nextStop) {
 			destinations.splice(i, 1);
 		}
