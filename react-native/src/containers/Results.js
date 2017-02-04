@@ -29,7 +29,10 @@ import {
 
 // Imports
 import Chip from 'Chip';
+import Destination from 'Destination';
 import LinearGradient from 'react-native-linear-gradient';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Uber from 'Uber';
 import * as Constants from 'Constants';
 
 class Results extends React.Component {
@@ -40,6 +43,16 @@ class Results extends React.Component {
       dataSource: new ListView.DataSource({
         rowHasChanged: (r1, r2) => r1 !== r2,
       }),
+      loaded: false,
+    }
+  }
+
+  componentDidMount() {
+    if (!this.state.loaded) {
+      this.setState({
+        loaded: true,
+        dataSource: this.state.dataSource.cloneWithRows(this.props.results),
+      })
     }
   }
 
@@ -51,15 +64,40 @@ class Results extends React.Component {
     );
   }
 
-  _renderRow() {
-
+  _renderRow(row) {
+    switch (row.view) {
+      case 'destination':
+        return (
+          <View style={{marginBottom: Constants.Sizes.Margins.Expanded}}>
+            <Destination
+                name={row.name}
+                stars={row.stars}
+                cost={row.cost}
+                type={row.type} />
+            {row != this.props.results[this.props.results.length - 1] ? <View style={styles.destinationSeparator} /> : null}
+          </View>
+        );
+      case 'uber':
+        return (
+          <View style={{marginBottom: Constants.Sizes.Margins.Expanded}}>
+            <Uber
+                cost={row.cost}
+                time={row.time} />
+            {row != this.props.results[this.props.results.length - 1] ? <View style={styles.uberSeparator} /> : null}
+          </View>
+        )
+      default:
+        return (
+          <View />
+        );
+    }
   }
 
-  _renderSeparator() {
-    return (
-      <View style={styles.separator} />
-    )
-  }
+  // _renderSeparator() {
+  //   return (
+  //     <View style={styles.separator} />
+  //   )
+  // }
 
   render(): ReactElement < any > {
     return (
@@ -77,20 +115,14 @@ class Results extends React.Component {
           </View>
           <View style={styles.textRow}>
             <Chip text={'nightlife'} />
-            <Chip text={'nightlife'} />
-            <Chip text={'nightlife'} />
-            <Chip text={'nightlife'} />
-            <Chip text={'nightlife'} />
-            <Chip text={'nightlife'} />
-            <Chip text={'nightlife'} />
+            <Chip text={'cheap'} />
           </View>
         </View>
         <ListView
             dataSource={this.state.dataSource}
-            alwaysBounceVertical={false}
+            bounces={false}
             renderHeader={this._renderHeader}
-            renderRow={this._renderRow.bind(this)}
-            renderSeparator={this._renderSeparator.bind(this)} />
+            renderRow={this._renderRow.bind(this)} />
       </View>
     );
   }
@@ -104,13 +136,6 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: Constants.Colors.primary,
     marginTop: Platform.OS === 'ios' ? 20 : 0,
-  },
-  textRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  spacer: {
-    flex: 1,
   },
   headerShadow: {
     height: 50,
@@ -132,12 +157,33 @@ const styles = StyleSheet.create({
     fontSize: Constants.Sizes.Text.Huge,
     fontFamily: 'Futura',
   },
-  separator: {
-    marginLeft: Constants.Sizes.Margins.Expanded * 2,
-    width: Constants.Sizes.Margins.Condensed,
-    backgroundColor: Constants.Colors.primaryLightText,
-    height: 30,
+  textRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
+  spacer: {
+    flex: 1,
+  },
+
+  destinationSeparator: {
+    zIndex: -1,
+    position: 'absolute',
+    left: Constants.Sizes.Margins.Expanded + 22,
+    top: 44,
+    width: Constants.Sizes.Margins.Condensed,
+    height: 50,
+    backgroundColor: Constants.Colors.primaryLightText,
+  },
+
+  uberSeparator: {
+    zIndex: -1,
+    position: 'absolute',
+    left: Constants.Sizes.Margins.Expanded + 22,
+    top: 38,
+    width: Constants.Sizes.Margins.Condensed,
+    height: 40,
+    backgroundColor: Constants.Colors.primaryLightText,
+  }
 });
 
 // Map state to props
@@ -145,6 +191,7 @@ const select = (store) => {
   return {
     city: store.search.city,
     attractions: store.search.attractions,
+    results: store.search.results,
   };
 };
 

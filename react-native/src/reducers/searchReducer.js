@@ -12,6 +12,87 @@
 const initialState = {
   city: '',
   numberOfAttractions: 3,
+  results: [
+    {
+      name: 'Drinks at Parliament',
+      stars: 5,
+      cost: 1,
+      type: 'local-bar',
+      view: 'destination',
+    },
+    {
+      cost: 8,
+      time: 12,
+      view: 'uber',
+    },
+    {
+      name: 'Strathcona Park',
+      stars: 4.5,
+      cost: 0,
+      type: 'local-florist',
+      view: 'destination',
+    },
+    {
+      cost: 8,
+      time: 12,
+      view: 'uber',
+    },
+    {
+      name: 'Strathcona Park',
+      stars: 4.5,
+      cost: 0,
+      type: 'local-florist',
+      view: 'destination',
+    },
+    {
+      cost: 8,
+      time: 12,
+      view: 'uber',
+    },
+    {
+      name: 'Strathcona Park',
+      stars: 4.5,
+      cost: 0,
+      type: 'local-florist',
+      view: 'destination',
+    },
+    {
+      cost: 8,
+      time: 12,
+      view: 'uber',
+    },
+    {
+      name: 'Strathcona Park',
+      stars: 4.5,
+      cost: 0,
+      type: 'local-florist',
+      view: 'destination',
+    },
+    {
+      cost: 8,
+      time: 12,
+      view: 'uber',
+    },
+    {
+      name: 'Strathcona Park',
+      stars: 4.5,
+      cost: 0,
+      type: 'local-florist',
+      view: 'destination',
+    },
+    {
+      cost: 8,
+      time: 12,
+      view: 'uber',
+    },
+    {
+      name: 'Strathcona Park',
+      stars: 4.5,
+      cost: 0,
+      type: 'local-florist',
+      view: 'destination',
+    },
+  ],
 };
 
 export default function search(state = initialState, action) {
@@ -25,6 +106,11 @@ export default function search(state = initialState, action) {
       return {
         ...state,
         numberOfAttractions: action.attractions,
+      };
+    case 'SEARCH_SET_RESULTS':
+      return {
+        ...state,
+        results: action.results,
       };
     default:
       return state;

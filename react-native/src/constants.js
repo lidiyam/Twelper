@@ -18,6 +18,8 @@ module.exports = {
     tertiary: '#4C2A85',
     overlay: 'rgba(0, 0, 0, 0.4)',
 
+    destination: 'rgba(255, 255, 255, 0.7)',
+
     primaryLightText: '#FFFFFF',
     secondaryLightText: '#FCEFEF',
     primaryDarkText: '#000000',

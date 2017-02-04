@@ -22,3 +22,10 @@ export function setNumberOfAttractions(attractions: number) {
     attractions,
   }
 }
+
+export function setResults(results: Array) {
+  return {
+    type: 'SEARCH_SET_RESULTS',
+    results,
+  }
+}
