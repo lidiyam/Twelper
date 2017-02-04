@@ -64,8 +64,10 @@ app.get('/api/routeInfo', function (req, res) {
 app.get('/api/findPath', function (req, res) {
 	var start_lat = req.query.latitude
 	var start_long = res.query.longitude
+	var city = res.query.city
+	var num = res.query.num
 
-	var destinations = getTopDestinations(start_lat, start_long)
+	var destinations = getTopDestinations(city, num)
 	var count = destinations.count
 
 	var topPath = new Array()
@@ -113,7 +115,37 @@ function findNextStop(start_lat, start_long, destinations) {
 
 
 // find top destinations (yelp): returns an array of Objects with keys: latitude, longitude, city
+function getTopDestinations(city, num) {
+	var destinations = new Array()
 
+	var searchRequest = {
+		//why is this filter not working?????
+		category_filter: 'tours',
+		location: city,
+		limit: num
+	};
+
+	yelp.accessToken(clientId, clientSecret).then(response => {
+	  var client = yelp.client(response.jsonBody.access_token);
+
+	  client.search(searchRequest)
+	  .then(response => {
+	    var Result = response.jsonBody.businesses;
+	    var prettyJson = JSON.stringify(Result, null, 4);
+
+	    // todo: conver this into array of objects
+	    destinations = prettyJson;
+	    res.send(prettyJson);
+	  });
+		}).catch(e => {
+		  res.send(e);
+		});
+
+
+
+
+	return destinations;
+}
 
 
 
