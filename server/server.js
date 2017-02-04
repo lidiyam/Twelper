@@ -61,11 +61,11 @@ app.get('/api/routeInfo', function (req, res) {
 })
 
 
-app.get('/api/findPath', function (req, res) {
-	var start_lat = req.query.latitude
-	var start_long = res.query.longitude
-	var city = res.query.city
-	var num = res.query.num
+app.get('/api/findPath/:latitude/:longitude/:city/:num', function (req, res) {
+	var start_lat = req.params.latitude
+	var start_long = req.params.longitude
+	var city = req.params.city
+	var num = req.params.num
 
 	var destinations = getTopDestinations(city, num)
 	var count = destinations.count
@@ -75,14 +75,13 @@ app.get('/api/findPath', function (req, res) {
 	for (var i = 0; i < count; ++i) {
 		var nextStop = findNextStop(start_lat, start_long, destinations)
 		topPath.push(nextStop)
-		destinations.remove(nextStop)
+		destinations = removeObj(nextStop, destinations)
 		start_lat = nextStop['latitude']
 		start_long = nextStop['longitude']
 	}
 
 	res.send( topPath )
 })
-
 
 
 function findNextStop(start_lat, start_long, destinations) {
@@ -134,16 +133,31 @@ function getTopDestinations(city, num) {
 	    var prettyJson = JSON.stringify(Result, null, 4);
 
 	    // todo: conver this into array of objects
-	    destinations = prettyJson;
-	    res.send(prettyJson);
+	    var destinations = new Array()
+	    console.log(prettyJson);
+	    for (obj in prettyJson) {
+	    	var latitude = prettyJson['coordinates']['latitude']
+	    	var longitude = prettyJson['coordinates']['longitude']
+	    	var city = prettyJson['city']
+	    	destinations.push({'latitude': latitude, 'longitude': longitude, 'city': city})
+	    }
+	    
+	    return destinations;
 	  });
 		}).catch(e => {
-		  res.send(e);
+			console.log(e);
 		});
 
+	return destinations;
+}
 
 
-
+function removeObj(nextStop, destinations) {
+	for (var i = 0; i < destinations.count; ++i) {
+		if (destinations[i] == nextStop) {
+			destinations.splice(i, 1);
+		}
+	}
 	return destinations;
 }
 
