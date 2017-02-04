@@ -68,7 +68,7 @@ app.get('/api/findPath/:latitude/:longitude/:city/:num', function (req, res) {
 	var city = req.params.city
 	var num = req.params.num
 
-	getTopDestinations(city, num).then((destinations) => {
+	getTopDestinations(city, num).then(async (destinations) => {
 		var count = destinations.length
 
 		console.log('destinations')
@@ -77,14 +77,21 @@ app.get('/api/findPath/:latitude/:longitude/:city/:num', function (req, res) {
 
 		var topPath = new Array()
 
-		for (var i = 0; i < count; ++i) {
-			var nextStop = findNextStop(start_lat, start_long, destinations)
-			console.log(nextStop)
-			topPath.push(nextStop)
-			console.log(topPath)
-			destinations = removeObj(nextStop, destinations)
-			start_lat = nextStop['latitude']
-			start_long = nextStop['longitude']
+		try {
+			for (var i = 0; i < count; ++i) {
+				console.log("NEXT")
+				var nextStop = await findNextStop(start_lat, start_long, destinations);
+				console.log(nextStop)
+				topPath.push(nextStop)
+				console.log(topPath)
+				console.log('destinat')
+				console.log(destinations.length)
+				destinations = removeObj(nextStop, destinations)
+				start_lat = nextStop['latitude']
+				start_long = nextStop['longitude']
+			}
+		} catch (e) {
+			console.log(e);
 		}
 
 		console.log('topPath: ...')
@@ -95,39 +102,57 @@ app.get('/api/findPath/:latitude/:longitude/:city/:num', function (req, res) {
 })
 
 
-function findNextStop(start_lat, start_long, destinations) {
-	var nextDest, bestScore = null;
-	var count = destinations.length
+async function findNextStop(start_lat, start_long, destinations) {
+	// return new Promise((resolve, reject) => {
+		var nextDest, bestScore = null;
+		var count = destinations.length
 
-	for (var i = 0; i < count; i++) {
-		console.log(destinations[i])
-		uber.estimates.getPriceForRoute(start_lat, start_long, destinations[i].latitude, destinations[i].longitude, function (err, resp) {
-			if (err) {
-				console.error(err)
-				console.log("error")
-				console.log(destinations[i]['latitude'])
-				console.log(destinations[i]['longitude'])
-			}
-			else {
-				var distance = resp['prices'][0]['distance']
-				var costEstimate = resp['prices'][0]['high_estimate']
-	  			var duration = resp['prices'][0]['duration']
-	  			var rating = resp['prices'][0]['rating']
-	  			var isClosed = resp['prices'][0]['is_closed']
+		for (var i = 0; i < count; i++) {
+			console.log(destinations[i])
+			uber.estimates.getPriceForRoute(start_lat, start_long, destinations[i].latitude, destinations[i].longitude, function (err, resp) {
+				if (err) {
+					console.error(err)
+					// reject(err);
+					// console.log("error")
+					// console.log(destinations[i]['latitude'])
+					// console.log(destinations[i]['longitude'])
+				}
+				else {
+					// console.log("Resp")
+					// console.log(resp)
 
-	  			var score = (3*distance + 2*costEstimate + duration - rating)
+					var distance = resp['prices'][0]['distance']
+					var costEstimate = resp['prices'][0]['high_estimate']
+		  			var duration = resp['prices'][0]['duration']
+		  			var rating = resp['prices'][0]['rating']
+		  			var isClosed = resp['prices'][0]['is_closed']
 
-	  			if (nextDest === null) {
-	  				nextDest = dest
-	  				bestScore = score
-	  			}
-	  			else if (score < bestScore && !isClosed) {
-	  				nextDest = dest
-	  				bestScore = score
-	  			}
-			}
-		})
-	}
+		  			// console.log("data")
+		  			// console.log(resp['prices'][0])
+		  			// console.log(distance)
+		  			// console.log(costEstimate)
+		  			// console.log(duration)
+		  			// console.log(rating)
+		  			// console.log(isClosed)
+
+		  			var score = (3*distance + 2*costEstimate + duration)
+
+		  			if (!nextDest) {
+		  				console.log("LOG")
+		  				console.log(destinations)
+		  				nextDest = destinations[i]
+		  				bestScore = score
+		  			}
+		  			else if (score < bestScore) {
+		  				nextDest = destinations[i]
+		  				bestScore = score
+		  			}
+
+		  			// resolve(nextDest);
+				}
+			})
+		}
+	// })
 	return nextDest;
 }
 
@@ -157,8 +182,8 @@ function getTopDestinations(city, num) {
 		    console.log(Result)
 		    //console.log(prettyJson);
 		    for (obj in Result) {
-		    	console.log(obj)
-		    	console.log("TEST")
+		    	// console.log(obj)
+		    	// console.log("TEST")
 		    	var latitude = Result[obj]['coordinates']['latitude']
 		    	var longitude = Result[obj]['coordinates']['longitude']
 		    	destinations.push({'latitude': latitude, 'longitude': longitude})

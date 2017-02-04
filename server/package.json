@@ -6,11 +6,13 @@
   "dependencies": {
     "body-parser": "^1.16.0",
     "express": "^4.14.0",
+    "node-uber": "^0.9.7",
     "promise": "^7.1.1",
     "yelp-fusion": "^1.0.3"
   },
   "devDependencies": {},
   "scripts": {
+    "start": "node --harmony-async-await server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
