@@ -69,20 +69,26 @@ app.get('/api/findPath/:latitude/:longitude/:city/:num', function (req, res) {
 	var num = req.params.num
 
 	getTopDestinations(city, num).then((destinations) => {
-		var count = destinations.count
+		var count = destinations.length
 
 		console.log('destinations')
 		console.log(destinations)
+		console.log(count)
 
 		var topPath = new Array()
 
 		for (var i = 0; i < count; ++i) {
 			var nextStop = findNextStop(start_lat, start_long, destinations)
+			console.log(nextStop)
 			topPath.push(nextStop)
+			console.log(topPath)
 			destinations = removeObj(nextStop, destinations)
 			start_lat = nextStop['latitude']
 			start_long = nextStop['longitude']
 		}
+
+		console.log('topPath: ...')
+		console.log(topPath)
 
 		res.send( topPath )
 	});
@@ -91,22 +97,31 @@ app.get('/api/findPath/:latitude/:longitude/:city/:num', function (req, res) {
 
 function findNextStop(start_lat, start_long, destinations) {
 	var nextDest, bestScore = null;
+	var count = destinations.length
 
-	for (dest in destinations) {
-		uber.estimates.getPriceForRoute(start_lat, start_long, dest['latitude'], dest['longitude'], function (err, resp) {
-			if (err) console.error(err)
+	for (var i = 0; i < count; i++) {
+		console.log(destinations[i])
+		uber.estimates.getPriceForRoute(start_lat, start_long, destinations[i].latitude, destinations[i].longitude, function (err, resp) {
+			if (err) {
+				console.error(err)
+				console.log("error")
+				console.log(destinations[i]['latitude'])
+				console.log(destinations[i]['longitude'])
+			}
 			else {
 				var distance = resp['prices'][0]['distance']
 				var costEstimate = resp['prices'][0]['high_estimate']
 	  			var duration = resp['prices'][0]['duration']
+	  			var rating = resp['prices'][0]['rating']
+	  			var isClosed = resp['prices'][0]['is_closed']
 
-	  			var score = (3*distance + 2*costEstimate + duration)
+	  			var score = (3*distance + 2*costEstimate + duration - rating)
 
-	  			if (nextDest == null) {
+	  			if (nextDest === null) {
 	  				nextDest = dest
 	  				bestScore = score
 	  			}
-	  			else if (score < bestScore) {
+	  			else if (score < bestScore && !isClosed) {
 	  				nextDest = dest
 	  				bestScore = score
 	  			}
@@ -138,7 +153,6 @@ function getTopDestinations(city, num) {
 		    var Result = response.jsonBody.businesses;
 		    //var prettyJson = JSON.stringify(Result, null, 4);
 		    console.log(Result.length)
-		    // todo: conver this into array of objects
 		    var destinations = new Array()
 		    console.log(Result)
 		    //console.log(prettyJson);
@@ -147,7 +161,7 @@ function getTopDestinations(city, num) {
 		    	console.log("TEST")
 		    	var latitude = Result[obj]['coordinates']['latitude']
 		    	var longitude = Result[obj]['coordinates']['longitude']
-		    	destinations.push({'latitude': latitude, 'longitude': longitude, 'city': city})
+		    	destinations.push({'latitude': latitude, 'longitude': longitude})
 		    }
 
 		    resolve(destinations);
