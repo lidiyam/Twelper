@@ -41,14 +41,79 @@ var uber = new Uber({
   sandbox: true // optional, defaults to false
 });
 
-uber.estimates.getPriceForRoute(3.1357, 101.6880, 3.0833, 101.6500, function (err, res) {
-  if (err) console.error(err);
-  else console.log(res);
-});
+
 
 app.get('/', function (req, res) {
-  res.send('Hello World!')
+  	res.send('Hello World!')
 })
+
+
+app.get('/api/routeInfo', function (req, res) {
+	uber.estimates.getPriceForRoute(req.query.start_latitude, res.query.start_longitude, res.query.end_latitude, res.query.end_longitude, function (err, resp) {
+	  if (err) console.error(err);
+	  else {
+	  	res.send(resp['prices'][0]);
+	  }
+	});
+})
+
+
+app.get('/api/findPath', function (req, res) {
+	var start_lat = req.query.latitude
+	var start_long = res.query.longitude
+
+	var destinations = getTopDestinations(start_lat, start_long)
+	var count = destinations.count
+
+	var topPath = new Array()
+
+	for (var i = 0; i < count; ++i) {
+		var nextStop = findNextStop(start_lat, start_long, destinations)
+		topPath.push(nextStop)
+		destinations.remove(nextStop)
+		start_lat = nextStop['latitude']
+		start_long = nextStop['longitude']
+	}
+
+	res.send( topPath )
+})
+
+
+
+function findNextStop(start_lat, start_long, destinations) {
+	var nextDest, bestScore = null;
+
+	for (dest in destinations) {
+		uber.estimates.getPriceForRoute(start_lat, start_long, dest['latitude'], dest['longitude'], function (err, resp) {
+			if (err) console.error(err)
+			else {
+				var distance = resp['prices'][0]['distance']
+				var costEstimate = resp['prices'][0]['high_estimate']
+	  			var duration = resp['prices'][0]['duration']
+
+	  			var score = (3*distance + 2*costEstimate + duration)
+
+	  			if (nextDest == null) {
+	  				nextDest = dest
+	  				bestScore = score
+	  			}
+	  			else if (score < bestScore) {
+	  				nextDest = dest
+	  				bestScore = score
+	  			}
+			}
+		})
+	}
+	return nextDest;
+}
+
+
+
+// find top destinations (yelp): returns an array of Objects with keys: latitude, longitude, city
+
+
+
+
 
 app.listen(8000, function () {
   console.log('Example app listening on port 8000!')
