@@ -191,14 +191,18 @@ function getTopDestinations(city, num) {
 		    //let prettyJson = JSON.stringify(Result, null, 4);
 		    console.log(Result.length)
 		    let destinations = new Array()
-		    console.log(Result)
 		    //console.log(prettyJson);
 		    for (obj in Result) {
+		    	console.log("OBJECTs**************************", Result[obj])
 		    	// console.log(obj)
 		    	// console.log("TEST")
 		    	let latitude = Result[obj]['coordinates']['latitude']
 		    	let longitude = Result[obj]['coordinates']['longitude']
-		    	destinations.push({'latitude': latitude, 'longitude': longitude})
+		    	let price = Result[obj]['price']
+		    	let store = Result[obj]['name']
+		    	let categories = Result[obj]['categories']
+		    	destinations.push({'latitude': latitude, 'longitude': longitude, 'price': price, 'store': store,
+		    		'categories': categories  })
 		    }
 
 		    resolve(destinations);
