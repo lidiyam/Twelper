@@ -32,6 +32,7 @@ import * as Constants from 'Constants';
 // Screen imports
 import City from './search/City';
 import Attractions from './search/Attractions';
+import Results from './Results';
 
 const {width, height} = Dimensions.get('window');
 
@@ -118,6 +119,18 @@ class Twelper extends React.Component {
             : null
             }
             <Attractions />
+          </View>
+        )
+      case 'results':
+        return (
+          <View style={styles.container}>
+            {this.state.resultsLoaded
+            ? <Image
+                source={{uri: BUILDINGS_IMAGE_URL}}
+                style={styles.backgroundImage} />
+            : null
+            }
+            <Results />
           </View>
         )
       default:

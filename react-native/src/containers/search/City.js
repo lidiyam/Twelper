@@ -41,7 +41,9 @@ class City extends React.Component {
   }
 
   _onNext() {
-    this.props.selectCity(this.props.city);
+    if (this.props.city != null && this.props.city.length > 0) {
+      this.props.selectCity(this.props.city);
+    }
   }
 
   render(): ReactElement < any > {

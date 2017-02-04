@@ -13,6 +13,7 @@
 module.exports = {
   Colors: {
     primary: '#496DDB',
+    primaryTransparent: '#496DDB00',
     secondary: '#FFC09F',
     tertiary: '#4C2A85',
     overlay: 'rgba(0, 0, 0, 0.4)',
@@ -25,6 +26,7 @@ module.exports = {
 
   Sizes: {
     Text: {
+      Huge: 48,
       Title: 24,
       Subtitle: 20,
       Body: 16,
