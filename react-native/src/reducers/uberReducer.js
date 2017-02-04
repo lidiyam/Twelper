@@ -11,6 +11,6 @@
 
 const initialState = {};
 
-export default function uber(state = initialState, action: Action) {
+export default function uber(state = initialState, action) {
   return state;
 }

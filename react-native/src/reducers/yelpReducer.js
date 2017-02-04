@@ -11,6 +11,6 @@
 
 const initialState = {};
 
-export default function yelp(state = initialState, action: Action) {
+export default function yelp(state = initialState, action) {
   return state;
 }

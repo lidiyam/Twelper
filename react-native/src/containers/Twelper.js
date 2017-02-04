@@ -17,7 +17,11 @@ import {
 } from 'react-native';
 
 // Imports
+import StatusBar from 'StatusBarUnderlay';
 import * as Constants from 'Constants';
+
+// Screen imports
+import City from './search/City';
 
 export default class Twelper extends React.Component {
 
@@ -27,6 +31,10 @@ export default class Twelper extends React.Component {
 
   _renderScene(route, navigator) {
     switch (route.id) {
+      case 'city':
+        return (
+          <City />
+        );
       default:
         return (
           <View />
@@ -36,11 +44,14 @@ export default class Twelper extends React.Component {
 
   render(): ReactElement < any > {
     return (
-      <Navigator
-          configureScene={this._configureScene}
-          initialRoute={{id: 'home'}}
-          renderScene={this._renderScene}
-          style={{flex: 1, backgroundColor: Constants.Colors.primary}} />
+      <View style={{flex: 1, backgroundColor: Constants.Colors.primary}}>
+        <Navigator
+            configureScene={this._configureScene}
+            initialRoute={{id: 'city'}}
+            renderScene={this._renderScene}
+            style={{flex: 1}} />
+        <StatusBar />
+      </View>
     );
   }
 }

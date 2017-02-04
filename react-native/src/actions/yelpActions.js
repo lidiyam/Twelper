@@ -9,6 +9,4 @@
  */
 'use strict';
 
-export function
-
 module.exports = {};
