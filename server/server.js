@@ -24,10 +24,10 @@ app.get('/destinations/:city/:num',function(req,res) {
 	  .then(response => {
 	    var Result = response.jsonBody.businesses;
 	    var prettyJson = JSON.stringify(Result, null, 4);
-	    console.log(prettyJson);
+	    res.send(prettyJson);
 	  });
 		}).catch(e => {
-		  console.log(e);
+		  res.send(e);
 		});
 
 });
