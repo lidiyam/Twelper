@@ -44,7 +44,7 @@ class Keywords extends React.Component {
   }
 
   _onAdd() {
-    if (this.state.keyword != null && this.state.keyword.length > 0) {
+    if (this.state.keyword != null && this.state.keyword.length > 0 && this.props.keywords.indexOf(this.state.keyword) < 0) {
       this.props.addKeyword(this.state.keyword);
       this.setState({keyword: ''});
     }
