@@ -92,7 +92,8 @@ function findNextStop(start_lat, start_long, destinations) {
 		  			console.log('rating: ' + rating)
 		  			console.log('isClosed: ' + isClosed)
 
-		  			let score = (3*distance + 2*highEstimate + duration - (rating/5)*100)
+		  			// score based on ride price, destinations already filtered by adjusted highest rank in yelp api
+		  			let score = highEstimate
 
 		  			calculated += 1;
 		  			if (!nextDest || (score < bestScore)) {
@@ -120,8 +121,8 @@ function getTopDestinations(city, num, category) {
 	return new Promise((resolve, reject) => {
 		let destinations = new Array()
 		let searchRequest = {
-			//why is this filter not working?????
 			categories: category,
+			sort: 2,
 			location: city,
 			limit: num
 		};
