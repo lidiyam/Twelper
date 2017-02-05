@@ -73,9 +73,7 @@ class Results extends React.Component {
     const categories = this.props.keywords.join(',');
 
     navigator.geolocation.getCurrentPosition( (response) => { 
-      console.log(response.coords.latitude)
-      console.log(response.coords.longitude)
-      fetch(`${api}/api/findPath/37.785834/-122.406417/${this.props.city}/${this.props.attractions}/${categories}`)
+      fetch(`${api}/api/findPath/${response.coords.latitude}/${response.coords.longitude}/${this.props.city}/${this.props.attractions}/${categories}`)
         .then((response) => response.json())
         .then((json) => {
           let minimumUberCost = 0;
