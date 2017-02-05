@@ -40,14 +40,19 @@
     <string/>
     <key>NSAppTransportSecurity</key>
     <dict>
-      <key>NSExceptionDomains</key>
-      <dict>
-        <key>localhost</key>
+        <key>NSExceptionDomains</key>
         <dict>
-          <key>NSExceptionAllowsInsecureHTTPLoads</key>
-          <true/>
+            <key>ec2-54-167-42-32.compute-1.amazonaws.com</key>
+            <dict>
+                <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+            </dict>
+            <key>localhost</key>
+            <dict>
+                <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+            </dict>
         </dict>
-      </dict>
     </dict>
     <key>UIAppFonts</key>
     <array>
