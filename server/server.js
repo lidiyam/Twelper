@@ -38,13 +38,14 @@ app.get('/api/routeInfo/:start_latitude/:start_longitude/:end_latitude/:end_long
 })
 
 // GET top attractions in a given location
-app.get('/api/findPath/:latitude/:longitude/:city/:num', function (req, res) {
+app.get('/api/findPath/:latitude/:longitude/:city/:num/:category', function (req, res) {
 	let start_lat = req.params.latitude
 	let start_long = req.params.longitude
 	let city = req.params.city
 	let num = req.params.num
+	let category = req.params.category
 
-	getTopDestinations(city, num).then(async (destinations) => {
+	getTopDestinations(city, num, category).then(async (destinations) => {
 		let count = destinations.length
 		let topPath = new Array()
 
@@ -101,12 +102,12 @@ function findNextStop(start_lat, start_long, destinations) {
 }
 
 // find top destinations (yelp): returns an array of Objects with keys: latitude, longitude, city
-function getTopDestinations(city, num) {
+function getTopDestinations(city, num, category) {
 	return new Promise((resolve, reject) => {
 		let destinations = new Array()
 		let searchRequest = {
 			//why is this filter not working?????
-			category_filter: 'tours',
+			categories: category,
 			location: city,
 			limit: num
 		};
@@ -125,9 +126,8 @@ function getTopDestinations(city, num) {
 		    	let longitude = Result[obj]['coordinates']['longitude']
 		    	let price = Result[obj]['price']
 		    	let store = Result[obj]['name']
-		    	let categories = Result[obj]['categories']
 		    	destinations.push({'latitude': latitude, 'longitude': longitude, 'price': price, 'store': store,
-		    		'categories': categories  })
+		    		  })
 		    }
 		    resolve(destinations);
 		  });
