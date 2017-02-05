@@ -7,11 +7,11 @@ const uberCreds = require('./uberSecret');
 const Uber = require('node-uber');
 const Promise = require('promise');
 
-//yelp API credentials
+// Yelp API credentials
 const clientId = yelpCreds.clientId;
 const clientSecret = yelpCreds.clientSecret;
 
-//uber API credentials
+// Uber API credentials
 const uber = new Uber({
   client_id: uberCreds.clientIdUber,
   client_secret: uberCreds.clientSecretUber,
@@ -70,7 +70,10 @@ function findNextStop(start_lat, start_long, destinations) {
 	return new Promise((resolve, reject) => {
 		let nextDest, bestScore = null;
 		let calculated = 0;
+		let costEstimates = new Object();
+
 		let count = destinations.length
+		console.log('destinations length: ' + count)
 
 		for (let i = 0; i < count; i++) {
 			uber.estimates.getPriceForRoute(start_lat, start_long, destinations[i].latitude, destinations[i].longitude, (err, resp) => {
@@ -79,18 +82,23 @@ function findNextStop(start_lat, start_long, destinations) {
 				}
 				else {
 					let distance = resp['prices'][0]['distance']
-					let costEstimate = resp['prices'][0]['high_estimate']
+					let lowEstimate = resp['prices'][0]['low_estimate']
+					let highEstimate = resp['prices'][0]['high_estimate']
 		  			let duration = resp['prices'][0]['duration']
-		  			let score = (3*distance + 2*costEstimate + duration)
+
+		  			let score = (3*distance + 2*highEstimate + duration)
 
 		  			calculated += 1;
-		  			if (!nextDest) {
+		  			if (!nextDest || (score < bestScore)) {
 		  				nextDest = destinations[i]
+		  				costEstimates['low_estimate'] = lowEstimate
+		  				costEstimates['high_estimate'] = highEstimate
+		  				nextDest['cost_estimates'] = costEstimates
+		  				nextDest['time_estimate'] = duration 	// in seconds
+		  				nextDest['distance'] = distance		// in miles
 		  				bestScore = score
-		  			}
-		  			else if (score < bestScore) {
-		  				nextDest = destinations[i]
-		  				bestScore = score
+
+		  				console.log(nextDest)
 		  			}
 		  			if (calculated == count) {
 		  				resolve(nextDest);
@@ -98,7 +106,7 @@ function findNextStop(start_lat, start_long, destinations) {
 				}
 			})
 		}
-	});
+	})
 }
 
 // find top destinations (yelp): returns an array of Objects with keys: latitude, longitude, city
@@ -118,9 +126,10 @@ function getTopDestinations(city, num, category) {
 		  client.search(searchRequest)
 		  .then(response => {
 		    let Result = response.jsonBody.businesses;
+		    console.log(Result.length)
 		    let destinations = new Array()
+		    console.log(Result)
 
-		    //console.log(prettyJson);
 		    for (obj in Result) {
 		    	let latitude = Result[obj]['coordinates']['latitude']
 		    	let longitude = Result[obj]['coordinates']['longitude']
