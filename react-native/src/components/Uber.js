@@ -30,15 +30,20 @@ export default class Uber extends React.Component {
         <Image
             style={styles.uberIcon}
             source={require('../../assets/uber.png')} />
-        <View style={styles.uberContent}>
-          <Text style={styles.uberText}>{`approx. $${this.props.cost} / ${this.props.time} min`}</Text>
-        </View>
+          <View style={[styles.uberContent, styles.vertical]}>
+            <Text style={styles.uberText}>{`approx. ${this.props.cost} / ${this.props.time}`}</Text>
+            <Text style={[styles.uberText, styles.orderText]}>{'Tap to open Uber'}</Text>
+          </View>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  vertical: {
+    flexDirection: 'column',
+    marginLeft: Constants.Sizes.Margins.Expanded,
+  },
   uber: {
     marginLeft: Constants.Sizes.Margins.Expanded,
     marginRight: Constants.Sizes.Margins.Expanded,
@@ -54,7 +59,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   uberContent: {
-    marginLeft: Constants.Sizes.Margins.Expanded,
     padding: Constants.Sizes.Margins.Condensed,
     borderRadius: Constants.Sizes.Margins.Condensed,
     backgroundColor: Constants.Colors.destination,
@@ -62,7 +66,12 @@ const styles = StyleSheet.create({
   uberText: {
     fontSize: Constants.Sizes.Text.Body,
     color: Constants.Colors.primaryDarkText,
+    paddingRight: Constants.Sizes.Margins.Regular,
+    paddingLeft: Constants.Sizes.Margins.Regular,
     fontFamily: 'Futura',
+  },
+  orderText: {
+    marginTop: Constants.Sizes.Margins.Condensed,
     fontStyle: 'italic',
-  }
+  },
 });

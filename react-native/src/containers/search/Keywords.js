@@ -12,6 +12,7 @@
 // React imports
 import React from 'react';
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -51,7 +52,14 @@ class Keywords extends React.Component {
   }
 
   _onRemove(keyword) {
-    this.props.removeKeyword(keyword);
+    if (this.props.keywords.length === 1) {
+      Alert.alert(
+        'Must have at least 1 keyword',
+        'You cannot delete your final keyword because you must have at least one.',
+        [{text: 'OK'}]);
+    } else {
+      this.props.removeKeyword(keyword);
+    }
   }
 
   _onDone() {

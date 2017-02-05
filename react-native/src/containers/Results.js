@@ -12,6 +12,7 @@
 // React imports
 import React from 'react';
 import {
+  Alert,
   ListView,
   Platform,
   ScrollView,
@@ -26,6 +27,7 @@ import {connect} from 'react-redux';
 import {
   removeKeyword,
   searchCity,
+  setResults,
   setRootView,
 } from 'actions';
 
@@ -37,6 +39,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Uber from 'Uber';
 import * as Constants from 'Constants';
+import {api} from 'env';
 
 class Results extends React.Component {
 
@@ -46,21 +49,73 @@ class Results extends React.Component {
       dataSource: new ListView.DataSource({
         rowHasChanged: (r1, r2) => r1 !== r2,
       }),
+      minimumUberCost: 0,
+      maximumUberCost: 0,
       loaded: false,
-    }
+    };
+
+    this._refreshItinerary = this._refreshItinerary.bind(this);
   }
 
   componentDidMount() {
     if (!this.state.loaded) {
-      this.setState({
-        loaded: true,
-        dataSource: this.state.dataSource.cloneWithRows(this.props.results),
-      })
+      this._refreshItinerary();
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.keywords.length != this.props.keywords.length) {
+      this._refreshItinerary();
+    }
+  }
+
+  _refreshItinerary() {
+    const categories = this.props.keywords.join(',');
+    fetch(`${api}/api/findPath/43.451583/-80.4971546/${this.props.city}/${this.props.attractions}/${categories}`)
+        .then((response) => response.json())
+        .then((json) => {
+          let minimumUberCost = 0;
+          let maximumUberCost = 0;
+          const itinerary = [];
+          const length = json.length;
+          for (let i = 0; i < length; i++) {
+            minimumUberCost += json[i].uber_cost_estimates.low_estimate;
+            maximumUberCost += json[i].uber_cost_estimates.high_estimate;
+
+            itinerary.push({
+              view: 'uber',
+              cost: `$${json[i].uber_cost_estimates.low_estimate} - $${json[i].uber_cost_estimates.high_estimate}`,
+              time: `${Math.ceil(json[i].uber_time_estimate / 60)} min`,
+            });
+            itinerary.push({
+              view: 'destination',
+              name: json[i].store,
+              cost: json[i].price,
+              stars: json[i].rating,
+              type: 'store',
+            });
+          }
+
+          this.props.setResults(itinerary);
+          this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(itinerary),
+            minimumUberCost,
+            maximumUberCost,
+            loaded: true,
+          });
+        })
+        .catch((err) => console.error(err));
+  }
+
   _onRemove(keyword) {
-    this.props.removeKeyword(keyword);
+    if (this.props.keywords.length === 1) {
+      Alert.alert(
+        'Must have at least 1 keyword',
+        'You cannot delete your final keyword because you must have at least one.',
+        [{text: 'OK'}]);
+    } else {
+      this.props.removeKeyword(keyword);
+    }
   }
 
   _onNewSearch() {
@@ -79,6 +134,12 @@ class Results extends React.Component {
             colors={[Constants.Colors.primary, Constants.Colors.primaryTransparent]}
             style={styles.headerShadow} />
       </View>
+    );
+  }
+
+  _renderFooter() {
+    return (
+      <View style={styles.footer} />
     );
   }
 
@@ -116,14 +177,18 @@ class Results extends React.Component {
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.textRow}>
-            <Text style={[styles.subtitle, styles.headerLeftText]}>{'your personalized trip to'}</Text>
+            <Text style={[styles.subtitle, styles.headerLeftText]}>{'your itinerary for'}</Text>
             <View style={styles.spacer} />
             <Text style={[styles.subtitle, styles.headerRightText]}>{'approx.'}</Text>
           </View>
-          <View style={styles.textRow}>
+          <View style={[styles.textRow, {alignItems: 'flex-end'}]}>
             <Text style={[styles.huge, styles.headerLeftText]}>{this.props.city}</Text>
             <View style={styles.spacer} />
-            <Text style={[styles.huge, styles.headerRightText]}>{'$8'}</Text>
+            {this.state.loaded
+              ? <Text style={[styles.title, styles.headerRightText, {paddingBottom: Constants.Sizes.Margins.Regular}]}>
+                  {`$${this.state.minimumUberCost} - $${this.state.maximumUberCost}`}
+              </Text>
+              : null}
           </View>
           <View style={styles.textRow}>
             {this.props.keywords.map((keyword) => (
@@ -138,6 +203,7 @@ class Results extends React.Component {
             removeClippedSubviews={false}
             dataSource={this.state.dataSource}
             renderHeader={this._renderHeader}
+            renderFooter={this._renderFooter}
             renderRow={this._renderRow.bind(this)} />
         <ActionButton
             buttonColor={Constants.Colors.secondary}
@@ -176,6 +242,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Constants.Colors.overlay,
   },
+  footer: {
+    height: 100,
+  },
   header: {
     backgroundColor: Constants.Colors.primary,
     marginTop: Platform.OS === 'ios' ? 20 : 0,
@@ -194,6 +263,10 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: Constants.Sizes.Text.Subtitle,
+    fontFamily: 'Futura',
+  },
+  title: {
+    fontSize: Constants.Sizes.Text.Title,
     fontFamily: 'Futura',
   },
   huge: {
@@ -223,7 +296,7 @@ const styles = StyleSheet.create({
     left: Constants.Sizes.Margins.Expanded + 22,
     top: 38,
     width: Constants.Sizes.Margins.Condensed,
-    height: 40,
+    height: 50,
     backgroundColor: Constants.Colors.primaryLightText,
   },
 });
@@ -232,7 +305,7 @@ const styles = StyleSheet.create({
 const select = (store) => {
   return {
     city: store.search.city,
-    attractions: store.search.attractions,
+    attractions: store.search.numberOfAttractions,
     results: store.search.results,
     keywords: store.search.keywords,
   };
@@ -241,6 +314,7 @@ const select = (store) => {
 // Map dispatch to props
 const actions = (dispatch) => {
   return {
+    setResults: (results: Array) => dispatch(setResults(results)),
     removeKeyword: (keyword: string) => dispatch(removeKeyword(keyword)),
     startNewSearch: () => {
       dispatch(setRootView('city'));
