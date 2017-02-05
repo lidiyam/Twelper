@@ -74,7 +74,7 @@ class Results extends React.Component {
   _refreshItinerary() {
     const categories = this.props.keywords.join(',');
 
-    navigator.geolocation.getCurrentPosition( (response) => { 
+    navigator.geolocation.getCurrentPosition( (response) => {
       fetch(`${api}/api/findPath/${response.coords.latitude}/${response.coords.longitude}/${this.props.city}/${this.props.attractions}/${categories}`)
         .then((response) => response.json())
         .then((json) => {
@@ -166,7 +166,7 @@ class Results extends React.Component {
     let end_latitude = `dropoff[latitude]=${row.end_latitude}`
     let end_longitude = `dropoff[longitude]=${row.end_longitude}`
     let end_nickname = `dropoff[nickname]=${row.end_address}`
-    let product_id = `product_id=${product_id}`
+    let product_id = `product_id=${row.product_id}`
 
     let url = `uber:\\/\\/${clientID}&action=setPickup&${start_latitude}&${start_longitude}&${start_nickname}&${end_latitude}&${end_longitude}&${end_nickname}&${product_id}`
     Linking.canOpenURL(url).then(supported => {
@@ -197,7 +197,7 @@ class Results extends React.Component {
           <TouchableOpacity onPress={ () => this._handleClick(row)}>
             <Uber
                 cost={row.cost}
-                time={row.time} 
+                time={row.time}
 
                 />
             {row != this.props.results[this.props.results.length - 1] ? <View style={styles.uberSeparator} /> : null}
