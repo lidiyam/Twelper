@@ -85,15 +85,21 @@ function findNextStop(start_lat, start_long, destinations) {
 					let highEstimate = resp['prices'][0]['high_estimate']
 		  			let duration = resp['prices'][0]['duration']
 
-		  			let score = (3*distance + 2*highEstimate + duration)
+		  			let rating = destinations[i]['rating']
+		  			let isClosed = destinations[i]['is_closed']
+
+		  			console.log('rating: ' + rating)
+		  			console.log('isClosed: ' + isClosed)
+
+		  			let score = (3*distance + 2*highEstimate + duration - (rating/5)*100)
 
 		  			calculated += 1;
 		  			if (!nextDest || (score < bestScore)) {
 		  				nextDest = destinations[i]
 		  				costEstimates['low_estimate'] = lowEstimate
 		  				costEstimates['high_estimate'] = highEstimate
-		  				nextDest['cost_estimates'] = costEstimates
-		  				nextDest['time_estimate'] = duration 	// in seconds
+		  				nextDest['uber_cost_estimates'] = costEstimates
+		  				nextDest['uber_time_estimate'] = duration 	// in seconds
 		  				nextDest['distance'] = distance		// in miles
 		  				bestScore = score
 
@@ -135,8 +141,14 @@ function getTopDestinations(city, num) {
 		    	let price = Result[obj]['price']
 		    	let store = Result[obj]['name']
 		    	let categories = Result[obj]['categories']
+		    	let rating = Result[obj]['rating']
+		    	let isClosed = Result[obj]['is_closed']
+
+		    	console.log('YELP top destinations')
+		    	console.log(Result[obj])
+
 		    	destinations.push({'latitude': latitude, 'longitude': longitude, 'price': price, 'store': store,
-		    		'categories': categories  })
+		    		'categories': categories, 'rating': rating, 'is_closed': isClosed  })
 		    }
 		    resolve(destinations);
 		  });
