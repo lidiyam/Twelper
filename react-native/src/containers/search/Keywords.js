@@ -94,7 +94,6 @@ class Keywords extends React.Component {
           <ScrollView contentContainerStyle={styles.scrollView}>
             {this.props.keywords.map((keyword) => (
               <Chip
-                  chipColor={Constants.Colors.primary}
                   key={keyword}
                   text={keyword}
                   onClickAction={() => this._onRemove(keyword)} />

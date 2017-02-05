@@ -68,6 +68,13 @@ class Results extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.keywords.length != this.props.keywords.length) {
       this._refreshItinerary();
+    } else {
+      for (let i = 0; i < nextProps.keywords.length && i < this.props.keywords.length; i++) {
+        if (nextProps.keywords[i] !== this.props.keywords[i]) {
+          this._refreshItinerary();
+          return;
+        }
+      }
     }
   }
 
@@ -103,7 +110,7 @@ class Results extends React.Component {
               name: json[i].store,
               cost: json[i].price,
               stars: json[i].rating,
-              type: 'store',
+              type: json[i].categories[0].alias,
             });
           }
 
@@ -157,18 +164,16 @@ class Results extends React.Component {
   }
 
   _handleClick(row) {
-    // uber://?client_id=<CLIENT_ID>&action=setPickup&pickup[latitude]=37.775818&pickup[longitude]=-122.418028&pickup[nickname]=UberHQ&dropoff[latitude]=37.802374&dropoff[longitude]=-122.405818&dropoff[nickname]=Coit%20Tower&product_id=a1111c8c-c720-46c3-8534-2fcdd730040d
+    let clientID = `client_id=${api.uberClientId}`;
+    let start_latitude = `pickup[latitude]=${row.start_latitude}`;
+    let start_longitude = `pickup[longitude]=${row.start_longitude}`;
+    let start_nickname = `pickup[nickname]=${row.start_address}`;
+    let end_latitude = `dropoff[latitude]=${row.end_latitude}`;
+    let end_longitude = `dropoff[longitude]=${row.end_longitude}`;
+    let end_nickname = `dropoff[nickname]=${row.end_address}`;
+    let product_id = `product_id=${row.product_id}`;
 
-    let clientID = "?client_id=NGiQeBxQ82yoCku43Pr-YybGzoqvqHji"
-    let start_latitude = `pickup[latitude]=${row.start_latitude}`
-    let start_longitude = `pickup[longitude]=${row.start_longitude}`
-    let start_nickname = `pickup[nickname]=${row.start_address}`
-    let end_latitude = `dropoff[latitude]=${row.end_latitude}`
-    let end_longitude = `dropoff[longitude]=${row.end_longitude}`
-    let end_nickname = `dropoff[nickname]=${row.end_address}`
-    let product_id = `product_id=${row.product_id}`
-
-    let url = `uber:\\/\\/${clientID}&action=setPickup&${start_latitude}&${start_longitude}&${start_nickname}&${end_latitude}&${end_longitude}&${end_nickname}&${product_id}`
+    let url = `uber:\\/\\/?${clientID}&action=setPickup&${start_latitude}&${start_longitude}&${start_nickname}&${end_latitude}&${end_longitude}&${end_nickname}&${product_id}`
     Linking.canOpenURL(url).then(supported => {
       if (supported) {
         Linking.openURL(url);

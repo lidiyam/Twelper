@@ -22,6 +22,20 @@ import {
 import * as Constants from 'Constants';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+const DESTINATION_TYPE_MAPPING = {
+  bars: 'local-bar',
+  musicvenues: 'audiotrack',
+  restaurants: 'restaurant',
+  galleries: 'brush',
+  movietheaters: 'local-movies',
+  healthtrainers: 'fitness-center',
+  yoga: 'spa',
+  specialtyschools: 'school',
+  gyms: 'fitness-center',
+  sports_clubs: 'golf-course',
+  historicaltours: 'all-inclusive',
+};
+
 export default class Destination extends React.Component {
   render() {
     const halfStar = this.props.stars.toString().indexOf('.') >= 0;
@@ -36,11 +50,15 @@ export default class Destination extends React.Component {
       );
     }
 
+    const icon = DESTINATION_TYPE_MAPPING[this.props.type]
+        ? DESTINATION_TYPE_MAPPING[this.props.type]
+        : 'location-city';
+
     return (
       <View style={styles.destination}>
         <View style={styles.destinationIcon}>
           <MaterialIcons
-              name={this.props.type}
+              name={icon}
               color={Constants.Colors.primaryLightText}
               size={Constants.Sizes.Text.Title} />
         </View>
