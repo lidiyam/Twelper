@@ -20,6 +20,8 @@ import {
   Text,
   TextInput,
   View,
+  Linking,
+  TouchableOpacity
 } from 'react-native';
 
 // Redux imports
@@ -88,6 +90,13 @@ class Results extends React.Component {
               view: 'uber',
               cost: `$${json[i].uber_cost_estimates.low_estimate} - $${json[i].uber_cost_estimates.high_estimate}`,
               time: `${Math.ceil(json[i].uber_time_estimate / 60)} min`,
+              product_id: json[i].product_id,
+              start_address: i == 0 ? 'My location' : json[i - 1].address,
+              end_address: json[i].address,
+              start_latitude: i == 0 ? response.coords.latitude : json[i - 1].latitude,
+              start_longitude: i == 0 ? response.coords.longitude : json[i - 1].longitude,
+              end_latitude: json[i].latitude,
+              end_longitude: json[i].longitude,
             });
             itinerary.push({
               view: 'destination',
@@ -147,6 +156,28 @@ class Results extends React.Component {
     );
   }
 
+  _handleClick(row) {
+    // uber://?client_id=<CLIENT_ID>&action=setPickup&pickup[latitude]=37.775818&pickup[longitude]=-122.418028&pickup[nickname]=UberHQ&dropoff[latitude]=37.802374&dropoff[longitude]=-122.405818&dropoff[nickname]=Coit%20Tower&product_id=a1111c8c-c720-46c3-8534-2fcdd730040d
+
+    let clientID = "?client_id=NGiQeBxQ82yoCku43Pr-YybGzoqvqHji"
+    let start_latitude = `pickup[latitude]=${row.start_latitude}`
+    let start_longitude = `pickup[longitude]=${row.start_longitude}`
+    let start_nickname = `pickup[nickname]=${row.start_address}`
+    let end_latitude = `dropoff[latitude]=${row.end_latitude}`
+    let end_longitude = `dropoff[longitude]=${row.end_longitude}`
+    let end_nickname = `dropoff[nickname]=${row.end_address}`
+    let product_id = `product_id=${product_id}`
+
+    let url = `uber:\\/\\/${clientID}&action=setPickup&${start_latitude}&${start_longitude}&${start_nickname}&${end_latitude}&${end_longitude}&${end_nickname}&${product_id}`
+    Linking.canOpenURL(url).then(supported => {
+      if (supported) {
+        Linking.openURL(url);
+      } else {
+        console.log('Don\'t know how to open URI: ' + url);
+      }
+    });
+  }
+
   _renderRow(row) {
     switch (row.view) {
       case 'destination':
@@ -163,10 +194,14 @@ class Results extends React.Component {
       case 'uber':
         return (
           <View style={{marginBottom: Constants.Sizes.Margins.Expanded}}>
+          <TouchableOpacity onPress={ () => this._handleClick(row)}>
             <Uber
                 cost={row.cost}
-                time={row.time} />
+                time={row.time} 
+
+                />
             {row != this.props.results[this.props.results.length - 1] ? <View style={styles.uberSeparator} /> : null}
+          </TouchableOpacity>
           </View>
         )
       default:

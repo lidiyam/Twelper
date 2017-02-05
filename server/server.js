@@ -81,10 +81,12 @@ function findNextStop(start_lat, start_long, destinations) {
 					console.error(err)
 				}
 				else {
+					console.log(resp['prices'])
 					let distance = resp['prices'][0]['distance']
 					let lowEstimate = resp['prices'][0]['low_estimate']
 					let highEstimate = resp['prices'][0]['high_estimate']
 		  			let duration = resp['prices'][0]['duration']
+		  			let product_id = resp['prices'][0]['product_id']
 
 		  			let rating = destinations[i]['rating']
 		  			let isClosed = destinations[i]['is_closed']
@@ -103,6 +105,7 @@ function findNextStop(start_lat, start_long, destinations) {
 		  				nextDest['uber_cost_estimates'] = costEstimates
 		  				nextDest['uber_time_estimate'] = duration 	// in seconds
 		  				nextDest['distance'] = distance		// in miles
+		  				nextDest['product_id'] = product_id
 		  				bestScore = score
 
 		  				console.log(nextDest)
@@ -145,12 +148,13 @@ function getTopDestinations(city, num, category) {
 		    	let categories = Result[obj]['categories']
 		    	let rating = Result[obj]['rating']
 		    	let isClosed = Result[obj]['is_closed']
+		    	let address = Result[obj]['location']['display_address'][0]
 
 		    	console.log('YELP top destinations')
 		    	console.log(Result[obj])
 
 		    	destinations.push({'latitude': latitude, 'longitude': longitude, 'price': price, 'store': store,
-		    		'categories': categories, 'rating': rating, 'is_closed': isClosed  })
+		    		'categories': categories, 'rating': rating, 'is_closed': isClosed, 'address': address  })
 
 		    }
 		    resolve(destinations);
