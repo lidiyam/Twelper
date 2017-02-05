@@ -23,6 +23,20 @@ export function setNumberOfAttractions(attractions: number) {
   }
 }
 
+export function addKeyword(keyword: string) {
+  return {
+    type: 'SEARCH_ADD_KEYWORD',
+    keyword,
+  }
+}
+
+export function removeKeyword(keyword: string) {
+  return {
+    type: 'SEARCH_REMOVE_KEYWORD',
+    keyword,
+  }
+}
+
 export function setResults(results: Array) {
   return {
     type: 'SEARCH_SET_RESULTS',

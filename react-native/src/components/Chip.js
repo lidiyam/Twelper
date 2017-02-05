@@ -34,7 +34,7 @@ export default class Chip extends React.Component {
 
   render() {
     return (
-      <View style={styles.chip}>
+      <View style={[styles.chip, {backgroundColor: this.props.chipColor ? this.props.chipColor : Constants.Colors.tertiary}]}>
         <TouchableOpacity onPress={this._onClickAction.bind(this)}>
           <View style={styles.action}>
             <MaterialIcons
@@ -52,9 +52,8 @@ export default class Chip extends React.Component {
 
 const styles = StyleSheet.create({
   chip: {
-    margin: Constants.Sizes.Margins.Regular,
+    margin: Constants.Sizes.Margins.Condensed,
     height: CHIP_HEIGHT,
-    backgroundColor: Constants.Colors.tertiary,
     borderRadius: CHIP_HEIGHT / 2,
     flexDirection: 'row',
     alignItems: 'center',
@@ -75,7 +74,7 @@ const styles = StyleSheet.create({
     fontSize: Constants.Sizes.Text.Body,
     color: Constants.Colors.primaryLightText,
     fontFamily: 'Futura',
-    paddingLeft: Constants.Sizes.Margins.Condensed,
-    paddingRight: Constants.Sizes.Margins.Regular,
+    paddingLeft: Constants.Sizes.Margins.Regular,
+    paddingRight: Constants.Sizes.Margins.Expanded,
   },
 });

@@ -12,6 +12,7 @@
 const initialState = {
   city: '',
   numberOfAttractions: 3,
+  keywords: ['nightlife', 'cheap'],
   results: [
     {
       name: 'Drinks at Parliament',
@@ -107,6 +108,29 @@ export default function search(state = initialState, action) {
         ...state,
         numberOfAttractions: action.attractions,
       };
+    case 'SEARCH_ADD_KEYWORD': {
+      const newKeywords = state.keywords.slice();
+      newKeywords.push(action.keyword);
+      newKeywords.sort();
+      return {
+        ...state,
+        keywords: newKeywords,
+      };
+    }
+    case 'SEARCH_REMOVE_KEYWORD': {
+      const newKeywords = state.keywords.slice();
+      for (let i = 0; i < newKeywords.length; i++) {
+        if (newKeywords[i] === action.keyword) {
+          newKeywords.splice(i, 1);
+          break;
+        }
+      }
+
+      return {
+        ...state,
+        keywords: newKeywords,
+      };
+    }
     case 'SEARCH_SET_RESULTS':
       return {
         ...state,

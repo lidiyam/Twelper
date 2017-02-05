@@ -26,7 +26,8 @@ import {
 } from 'actions';
 
 // Imports
-import NextButton from 'NextButton';
+import IconButton from 'IconButton';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import * as Constants from 'Constants';
 
 class City extends React.Component {
@@ -61,7 +62,14 @@ class City extends React.Component {
                 value={this.props.city}
                 onChangeText={(value) => this.props.updateCity(value)}
                 onSubmitEditing={this._onNext} />
-            <NextButton onClick={this._onNext} />
+            <IconButton
+              renderIcon={() => (
+                <MaterialIcons
+                    name={'done'}
+                    size={Constants.Sizes.Text.Title - 1}
+                    color={Constants.Colors.secondaryDarkText} />
+              )}
+              onClick={this._onNext} />
           </View>
         </View>
       </View>

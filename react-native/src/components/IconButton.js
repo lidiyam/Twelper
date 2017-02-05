@@ -2,8 +2,8 @@
  *
  * @license Copyright (C) 2017 Twelper
  * @created 2017-02-04
- * @file NextButton.js
- * @providesModule NextButton
+ * @file IconButton.js
+ * @providesModule IconButton
  * @description Small circular button
  *
  * @flow
@@ -24,7 +24,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 // Width / Height of the button
 const BUTTON_SIZE = 32;
 
-export default class NextButton extends React.Component {
+export default class IconButton extends React.Component {
 
   _onClick() {
     this.props.onClick && this.props.onClick();
@@ -42,10 +42,7 @@ export default class NextButton extends React.Component {
           backgroundColor: Constants.Colors.secondary,
           margin: Constants.Sizes.Margins.Regular,
           }}>
-          <MaterialIcons
-              name={'done'}
-              size={Constants.Sizes.Text.Title - 1}
-              color={Constants.Colors.secondaryDarkText} />
+          {this.props.renderIcon()}
         </View>
       </TouchableOpacity>
     );

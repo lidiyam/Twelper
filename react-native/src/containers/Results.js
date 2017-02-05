@@ -24,6 +24,7 @@ import {
 // Redux imports
 import {connect} from 'react-redux';
 import {
+  removeKeyword,
   searchCity,
   setRootView,
 } from 'actions';
@@ -58,12 +59,16 @@ class Results extends React.Component {
     }
   }
 
+  _onRemove(keyword) {
+    this.props.removeKeyword(keyword);
+  }
+
   _onNewSearch() {
     this.props.startNewSearch();
   }
 
   _onFilterList() {
-
+    this.props.filter();
   }
 
   _renderHeader() {
@@ -121,11 +126,16 @@ class Results extends React.Component {
             <Text style={[styles.huge, styles.headerRightText]}>{'$8'}</Text>
           </View>
           <View style={styles.textRow}>
-            <Chip text={'nightlife'} />
-            <Chip text={'cheap'} />
+            {this.props.keywords.map((keyword) => (
+              <Chip
+                  key={keyword}
+                  text={keyword}
+                  onClickAction={() => this._onRemove(keyword)} />
+            ))}
           </View>
         </View>
         <ListView
+            removeClippedSubviews={false}
             dataSource={this.state.dataSource}
             renderHeader={this._renderHeader}
             renderRow={this._renderRow.bind(this)} />
@@ -171,7 +181,7 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === 'ios' ? 20 : 0,
   },
   headerShadow: {
-    height: 50,
+    height: 20,
   },
   headerLeftText: {
     paddingLeft: Constants.Sizes.Margins.Regular,
@@ -224,16 +234,19 @@ const select = (store) => {
     city: store.search.city,
     attractions: store.search.attractions,
     results: store.search.results,
+    keywords: store.search.keywords,
   };
 };
 
 // Map dispatch to props
 const actions = (dispatch) => {
   return {
+    removeKeyword: (keyword: string) => dispatch(removeKeyword(keyword)),
     startNewSearch: () => {
       dispatch(setRootView('city'));
       dispatch(searchCity(''));
     },
+    filter: () => dispatch(setRootView('keywords')),
   };
 };
 

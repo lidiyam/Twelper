@@ -33,15 +33,18 @@ import * as Constants from 'Constants';
 import City from './search/City';
 import Attractions from './search/Attractions';
 import Results from './Results';
+import Keywords from './search/Keywords';
 
 const {width, height} = Dimensions.get('window');
 
 const NATURE_IMAGE_URL = 'https://source.unsplash.com/category/nature/';
 const PEOPLE_IMAGE_URL = 'https://source.unsplash.com/category/people/';
 const BUILDINGS_IMAGE_URL = 'https://source.unsplash.com/category/buildings/';
+const FOOD_IMAGE_URL = 'https://source.unsplash.com/category/food/';
 const prefetchCity = Image.prefetch(NATURE_IMAGE_URL)
 const prefetchAttractions = Image.prefetch(PEOPLE_IMAGE_URL);
 const prefetchResults = Image.prefetch(BUILDINGS_IMAGE_URL);
+const prefetchKeywords = Image.prefetch(FOOD_IMAGE_URL);
 
 class Twelper extends React.Component {
 
@@ -51,6 +54,7 @@ class Twelper extends React.Component {
       cityLoaded: false,
       attractionsLoaded: false,
       resultsLoaded: false,
+      keywordsLoaded: false,
     };
   }
 
@@ -72,6 +76,7 @@ class Twelper extends React.Component {
     prefetchCity.then(() => this.setState({cityLoaded: true}));
     prefetchAttractions.then(() => this.setState({attractionsLoaded: true}));
     prefetchResults.then(() => this.setState({resultsLoaded: true}));
+    prefetchKeywords.then(() => this.setState({keywordsLoaded: true}));
   }
 
   _configureScene(route): Object {
@@ -120,7 +125,7 @@ class Twelper extends React.Component {
             }
             <Attractions />
           </View>
-        )
+        );
       case 'results':
         return (
           <View style={styles.container}>
@@ -131,6 +136,18 @@ class Twelper extends React.Component {
             : null
             }
             <Results />
+          </View>
+        );
+      case 'keywords':
+        return (
+          <View style={styles.container}>
+            {this.state.resultsLoaded
+            ? <Image
+                source={{uri: FOOD_IMAGE_URL}}
+                style={styles.backgroundImage} />
+            : null
+            }
+            <Keywords />
           </View>
         )
       default:

@@ -27,7 +27,8 @@ import {
 } from 'actions';
 
 // Imports
-import NextButton from 'NextButton';
+import IconButton from 'IconButton';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import * as Constants from 'Constants';
 
 const MAX_ATTRACTIONS = 10;
@@ -71,7 +72,14 @@ class Attractions extends React.Component {
           ))}
         </Picker>
         <View style={styles.inputContainer}>
-          <NextButton onClick={this._onNext} />
+          <IconButton
+              renderIcon={() => (
+                <MaterialIcons
+                    name={'done'}
+                    size={Constants.Sizes.Text.Title - 1}
+                    color={Constants.Colors.secondaryDarkText} />
+              )}
+              onClick={this._onNext} />
         </View>
       </View>
     );
