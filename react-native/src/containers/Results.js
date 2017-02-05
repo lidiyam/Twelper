@@ -71,7 +71,11 @@ class Results extends React.Component {
 
   _refreshItinerary() {
     const categories = this.props.keywords.join(',');
-    fetch(`${api}/api/findPath/43.451583/-80.4971546/${this.props.city}/${this.props.attractions}/${categories}`)
+
+    navigator.geolocation.getCurrentPosition( (response) => { 
+      console.log(response.coords.latitude)
+      console.log(response.coords.longitude)
+      fetch(`${api}/api/findPath/37.785834/-122.406417/${this.props.city}/${this.props.attractions}/${categories}`)
         .then((response) => response.json())
         .then((json) => {
           let minimumUberCost = 0;
@@ -105,6 +109,8 @@ class Results extends React.Component {
           });
         })
         .catch((err) => console.error(err));
+
+    });
   }
 
   _onRemove(keyword) {

@@ -24,6 +24,8 @@
     <true/>
     <key>UILaunchStoryboardName</key>
     <string>LaunchScreen</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location to show you around</string>
     <key>UIRequiredDeviceCapabilities</key>
     <array>
       <string>armv7</string>
