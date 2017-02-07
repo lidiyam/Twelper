@@ -6,13 +6,13 @@ Built using Node.js and React Native technologies, along with leveraging the [Ye
 
 ## Screenshots
 
-<img src='./screenshots/city.jpg' width='220' alt='Find your city' />
+| Find your city | How many attractions? |
+|:--------------:|:---------------------:|
+| <img src='./screenshots/city.jpg' width='220' alt='Find your city' /> | <img src='./screenshots/attractions.jpg' width='220' alt='How many attractions?' /> |
 
-<img src='./screenshots/attractions.jpg' width='220' alt='How many attractions?' />
-
-<img src='./screenshots/keywords.jpg' width='220' alt='Pick your keywords' />
-
-<img src='./screenshots/results.jpg' width='220' alt='Results' />
+| Keywords | Results |
+|:--------:|:-------:|
+| <img src='./screenshots/keywords.jpg' width='220' alt='Pick your keywords' /> | <img src='./screenshots/results.jpg' width='220' alt='Results' /> |
 
 ## Build instructions
 
