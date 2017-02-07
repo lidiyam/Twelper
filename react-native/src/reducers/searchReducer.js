@@ -11,7 +11,7 @@
 
 const initialState = {
   city: '',
-  numberOfAttractions: 5,
+  numberOfAttractions: 4,
   keywords: ['arts'],
   results: [],
 };

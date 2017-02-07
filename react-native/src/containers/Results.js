@@ -41,7 +41,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Uber from 'Uber';
 import * as Constants from 'Constants';
-import {api} from 'env';
+import {api} from '../env';
 
 class Results extends React.Component {
 

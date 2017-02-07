@@ -26,6 +26,11 @@ import Twelper from './containers/Twelper';
 
 export default function setup() {
 
+  // Disable yellow box on release
+  if (!__DEV__) {
+    console.disableYellowBox = true
+  }
+
   // Enable animations on Android
   if (Platform.OS === 'android') {
     UIManager.setLayoutAnimationEnabledExperimental(true);
